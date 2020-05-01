@@ -5,7 +5,7 @@ export class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      history: [{ squares: Array(9).fill(null) }],
+      history: [{ squares: Array(9).fill(null), location: -1 }],
       xIsNext: true,
       stepNumber: 0
     };
@@ -17,7 +17,8 @@ export class Game extends React.Component {
     this.setState({
       history: history.concat([
         {
-          squares: nextSquares
+          squares: nextSquares,
+          location: i
         }
       ]),
       xIsNext: !this.state.xIsNext,
@@ -36,7 +37,12 @@ export class Game extends React.Component {
     }
     // step --> step is the state of the board at move. We don't need it here, just move is important.
     const moves = history.map((step, move) => {
-      const desc = move ? "Go to Step #" + move : "Go to Game Start ";
+      const location = history[move].location;
+      const row = location < 3 ? "3" : location < 6 ? "2" : "1";
+      const col = location % 3 === 0 ? "A" : location % 3 === 1 ? "B" : "C";
+      const desc = move
+        ? "Go to Step #" + move + " (" + col + row + ")"
+        : "Go to Game Start ";
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
