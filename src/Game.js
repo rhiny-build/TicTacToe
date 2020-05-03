@@ -7,12 +7,16 @@ export class Game extends React.Component {
     this.state = {
       history: [{ squares: Array(9).fill(null), location: -1 }],
       xIsNext: true,
-      stepNumber: 0
+      stepNumber: 0,
+      timeTravel: false
     };
   }
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const nextSquares = history[history.length - 1].squares.slice();
+    if (nextSquares[i] != null) {
+      return;
+    }
     nextSquares[i] = this.state.xIsNext ? "X" : "O";
     this.setState({
       history: history.concat([
@@ -22,20 +26,19 @@ export class Game extends React.Component {
         }
       ]),
       xIsNext: !this.state.xIsNext,
-      stepNumber: this.state.stepNumber + 1
+      stepNumber: this.state.stepNumber + 1,
+      timeTravel: false
     });
   }
   render() {
-    //alert("rendering "  + this.state.stepNumber + ',' + this.state.xIsNext);
     const history = this.state.history;
     const current = history[this.state.stepNumber]; //current state of board
-    //console.log(current);
     let status = "Next player:" + (this.state.xIsNext ? "X" : "O");
     const winner = calculateWinner(current.squares);
+
     if (winner) {
       status = "Winner is " + winner;
     }
-    // step --> step is the state of the board at move. We don't need it here, just move is important.
     const moves = history.map((step, move) => {
       const location = history[move].location;
       const row = location < 3 ? "3" : location < 6 ? "2" : "1";
@@ -43,9 +46,15 @@ export class Game extends React.Component {
       const desc = move
         ? "Go to Step #" + move + " (" + col + row + ")"
         : "Go to Game Start ";
+      const buttonStyle =
+        this.state.timeTravel && move === this.state.stepNumber
+          ? "step-clicked"
+          : "step-unclicked";
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button className={buttonStyle} onClick={() => this.jumpTo(move)}>
+            {desc}
+          </button>
         </li>
       );
     });
@@ -65,7 +74,8 @@ export class Game extends React.Component {
   jumpTo(i) {
     this.setState({
       stepNumber: i,
-      xIsNext: i % 2 === 0
+      xIsNext: i % 2 === 0,
+      timeTravel: true
     });
   }
 }
