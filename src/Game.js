@@ -1,11 +1,17 @@
 import React from "react";
 import { Board } from "./Board";
+import { calculateWinner } from "./calculateWinner";
 
 export class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      history: [{ squares: Array(9).fill(null), location: -1 }],
+      history: [
+        {
+          squares: Array(props.boardSize * props.boardSize).fill(null),
+          location: -1
+        }
+      ],
       xIsNext: true,
       stepNumber: 0,
       timeTravel: false
@@ -35,9 +41,11 @@ export class Game extends React.Component {
     const current = history[this.state.stepNumber]; //current state of board
     let status = "Next player:" + (this.state.xIsNext ? "X" : "O");
     const winner = calculateWinner(current.squares);
-
-    if (winner) {
-      status = "Winner is " + winner;
+    let highlight = [];
+    if (winner != null) {
+      console.log(winner);
+      status = "Winner is " + winner[0];
+      highlight = winner[1].slice();
     }
     const moves = history.map((step, move) => {
       const location = history[move].location;
@@ -61,7 +69,11 @@ export class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board board={current.squares} onClick={i => this.handleClick(i)} />
+          <Board
+            board={current.squares}
+            highlight={highlight}
+            onClick={i => this.handleClick(i)}
+          />
         </div>
         <div className="game-info">
           <div>{status}</div>
@@ -78,24 +90,4 @@ export class Game extends React.Component {
       timeTravel: true
     });
   }
-}
-
-function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
 }

@@ -3,8 +3,10 @@ import { Square } from "./Square";
 
 export class Board extends React.Component {
   renderSquare(i) {
+    let win = this.props.highlight.includes(i) ? true : false;
     return (
       <Square
+        shouldHighlight={win}
         value={this.props.board[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -15,30 +17,35 @@ export class Board extends React.Component {
     return (
       <div>
         <div className="status" />
-        <div className="board-row">
-          <h2 className="row-title">3</h2>
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          <h2 className="row-title">2</h2>
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <h2 className="row-title">1</h2>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-        <div className="board-row">
-          <h2 className="square-title">A</h2>
-          <h2 className="square-title">B</h2>
-          <h2 className="square-title">C</h2>
-        </div>
+        {this.createBoard(Math.sqrt(this.props.board.length))}
       </div>
     );
+  }
+  createBoard(size) {
+    let board = [];
+    for (let rowNum = 0; rowNum < size; rowNum++) {
+      let rowDiv = [];
+      let row = [];
+      //row.push(<div className="board-row">);
+      row.push(<h2 className="row-title">{size - rowNum}</h2>);
+      for (let col = 0; col < size; col++) {
+        const index = size * rowNum + col;
+        //console.log('index : ' + index);
+        row.push(this.renderSquare(index));
+      }
+      rowDiv.push(<div className="board-row">{row}</div>);
+      board.push(rowDiv);
+    }
+    // column titles
+    let titles = (
+      <div className="board-row">
+        <h2 className="square-title">A</h2>
+        <h2 className="square-title">B</h2>
+        <h2 className="square-title">C</h2>
+      </div>
+    );
+
+    board.push(titles);
+    return board;
   }
 }
