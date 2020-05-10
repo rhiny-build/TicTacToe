@@ -6,7 +6,7 @@ import { Game } from "./Game";
 const rootElement = document.getElementById("root");
 ReactDOM.render(
   <React.StrictMode>
-    <Game />
+    <Game boardSize={4} />
   </React.StrictMode>,
   rootElement
 );
